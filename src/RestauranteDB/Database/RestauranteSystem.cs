@@ -1,25 +1,8 @@
 ﻿using System;
-using System.Data;
 using System.Data.SqlClient;
 
-namespace RestauranteDB
+namespace RestauranteDB.Database
 {
-    public class DatabaseConnection
-    {
-        private string connectionString = "Server=localhost\\SQLEXPRESS;Database=master;Integrated Security=True;";
-
-        public SqlConnection GetConnection()
-        {
-            return new SqlConnection(connectionString);
-        }
-
-        // Metodo para obter uma conexao especifica ao banco RestauranteDB
-        public SqlConnection GetDatabaseConnection()
-        {
-            return new SqlConnection("Server=localhost\\SQLEXPRESS;Database=RestauranteDB;Integrated Security=True;");
-        }
-    }
-
     public class RestauranteSystem
     {
         private DatabaseConnection db = new DatabaseConnection();
@@ -55,30 +38,69 @@ namespace RestauranteDB
             {
                 conn.Open();
                 string createTables = @"
-                IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Cliente' AND xtype='U')
-                CREATE TABLE Cliente (id INT PRIMARY KEY, nome NVARCHAR(50), sexo CHAR(1), idade INT, nascimento DATE, pontos INT);
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Cliente' AND xtype='U')
+        CREATE TABLE Cliente (
+            id INT PRIMARY KEY, 
+            nome NVARCHAR(50) NOT NULL, 
+            sexo CHAR(1) CHECK (sexo IN ('m', 'f', 'o')), 
+            idade INT NOT NULL, 
+            nascimento DATE NOT NULL, 
+            pontos INT DEFAULT 0
+        );
 
-                IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Prato' AND xtype='U')
-                CREATE TABLE Prato (id INT PRIMARY KEY, nome NVARCHAR(50), descricao NVARCHAR(200), valor DECIMAL(10, 2), disponibilidade BIT);
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Prato' AND xtype='U')
+        CREATE TABLE Prato (
+            id INT PRIMARY KEY, 
+            nome NVARCHAR(50) NOT NULL, 
+            descricao NVARCHAR(200), 
+            valor DECIMAL(10, 2), 
+            disponibilidade BIT
+        );
 
-                IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Fornecedor' AND xtype='U')
-                CREATE TABLE Fornecedor (id INT PRIMARY KEY, nome NVARCHAR(50), estado_origem NVARCHAR(50));
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Fornecedor' AND xtype='U')
+        CREATE TABLE Fornecedor (
+            id INT PRIMARY KEY, 
+            nome NVARCHAR(50) NOT NULL, 
+            estado_origem NVARCHAR(50) NOT NULL
+        );
 
-                IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Ingrediente' AND xtype='U')
-                CREATE TABLE Ingrediente (id INT PRIMARY KEY, nome NVARCHAR(50), data_fabricacao DATE, data_validade DATE, quantidade INT, observacao NVARCHAR(100));
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Ingrediente' AND xtype='U')
+        CREATE TABLE Ingrediente (
+            id INT PRIMARY KEY, 
+            nome NVARCHAR(50) NOT NULL, 
+            data_fabricacao DATE NOT NULL, 
+            data_validade DATE NOT NULL, 
+            quantidade INT NOT NULL, 
+            observacao NVARCHAR(100) NULL
+        );
 
-                IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Usos' AND xtype='U')
-                CREATE TABLE Usos (id_prato INT, id_ingrediente INT, FOREIGN KEY (id_prato) REFERENCES Prato(id), FOREIGN KEY (id_ingrediente) REFERENCES Ingrediente(id));
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Usos' AND xtype='U')
+        CREATE TABLE Usos (
+            id_prato INT, 
+            id_ingrediente INT, 
+            FOREIGN KEY (id_prato) REFERENCES Prato(id), 
+            FOREIGN KEY (id_ingrediente) REFERENCES Ingrediente(id)
+        );
 
-                IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Venda' AND xtype='U')
-                CREATE TABLE Venda (id INT PRIMARY KEY, id_cliente INT, id_prato INT, quantidade INT, dia DATE, hora TIME, valor DECIMAL(10, 2),
-                    FOREIGN KEY (id_cliente) REFERENCES Cliente(id), FOREIGN KEY (id_prato) REFERENCES Prato(id));
-            ";
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Venda' AND xtype='U')
+        CREATE TABLE Venda (
+            id INT PRIMARY KEY, 
+            id_cliente INT, 
+            id_prato INT, 
+            quantidade INT, 
+            dia DATE, 
+            hora TIME, 
+            valor DECIMAL(10, 2),
+            FOREIGN KEY (id_cliente) REFERENCES Cliente(id), 
+            FOREIGN KEY (id_prato) REFERENCES Prato(id)
+        );";
+
                 SqlCommand cmd = new SqlCommand(createTables, conn);
                 cmd.ExecuteNonQuery();
                 Console.WriteLine("Tabelas criadas com sucesso ou já existentes.");
             }
         }
+
 
         // Metodo para inserir dados iniciais evitando duplicacoes
         public void InserirDadosIniciais()
@@ -132,6 +154,14 @@ namespace RestauranteDB
             }
         }
 
+        public void CriarTriggers()
+        {
+            CriarTriggerPontos();/*
+            CriarTriggerIngredientesVencidos();
+            CriarTriggerCompraIndisponivel();
+            CriarTriggerVendaProduto();*/
+        }
+
         // Trigger para pontos de cliente e recria se ja existir
         public void CriarTriggerPontos()
         {
@@ -163,17 +193,6 @@ namespace RestauranteDB
 
                 Console.WriteLine("Trigger de pontos criada com sucesso!");
             }
-        }
-
-        // Metodo principal
-        static void Main(string[] args)
-        {
-            RestauranteSystem sistema = new RestauranteSystem();
-            sistema.CriarBancoDeDados();
-            sistema.CriarTabelas();
-            sistema.InserirDadosIniciais();
-            sistema.CriarTriggerPontos();
-            // As outras implementacoes vao aqui
         }
     }
 }
