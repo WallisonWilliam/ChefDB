@@ -1,10 +1,16 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 
 namespace RestauranteDB.Database
 {
     public class DatabaseConnection
     {
-        private string connectionString = "Server=localhost\\SQLEXPRESS;Database=master;Integrated Security=True;";
+        private readonly string connectionString;
+
+        public DatabaseConnection(string connectionString)
+        {
+            this.connectionString = connectionString;
+        }
 
         public SqlConnection GetConnection()
         {

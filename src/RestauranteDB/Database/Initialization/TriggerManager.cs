@@ -1,18 +1,25 @@
 ﻿using System;
 using System.Data.SqlClient;
 
-namespace RestauranteDB.Database {
-    
+namespace RestauranteDB.Database
+{
     public class TriggerManager
-	{
-        private readonly DatabaseConnection db = new DatabaseConnection();
+    {
+        private readonly DatabaseConnection db;
+
+        public TriggerManager(DatabaseConnection dbConnection)
+        {
+            db = dbConnection;
+        }
 
         public void CriarTriggers()
         {
-            CriarTriggerPontos();/*
+            CriarTriggerPontos();
+            /*
             CriarTriggerIngredientesVencidos();
             CriarTriggerCompraIndisponivel();
-            CriarTriggerVendaProduto();*/
+            CriarTriggerVendaProduto();
+            */
         }
 
         // Trigger para pontos de cliente e recria se ja existir
@@ -23,26 +30,28 @@ namespace RestauranteDB.Database {
                 conn.Open();
 
                 // Exclui o trigger se ele ja existir
-                string dropTriggerSQL = @"IF OBJECT_ID('trg_CalculatePoints', 'TR') IS NOT NULL 
-                                      DROP TRIGGER trg_CalculatePoints;";
-                SqlCommand dropCmd = new SqlCommand(dropTriggerSQL, conn);
-                dropCmd.ExecuteNonQuery();
+                using (SqlCommand dropCmd = conn.CreateCommand())
+                {
+                    dropCmd.CommandText = @"IF OBJECT_ID('trg_CalculatePoints', 'TR') IS NOT NULL DROP TRIGGER trg_CalculatePoints;";
+                    dropCmd.ExecuteNonQuery();
+                }
 
-                // Cria o trigger novamente
-                string triggerSQL = @"
-            CREATE TRIGGER trg_CalculatePoints
-            ON Venda
-            AFTER INSERT
-            AS
-            BEGIN
-                UPDATE Cliente
-                SET pontos = pontos + (INSERTED.valor / 10)
-                FROM Cliente, INSERTED
-                WHERE Cliente.id = INSERTED.id_cliente;
-            END;
-            ";
-                SqlCommand cmd = new SqlCommand(triggerSQL, conn);
-                cmd.ExecuteNonQuery();
+                // Cria o trigger que atualiza os pontos do cliente
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    CREATE TRIGGER trg_CalculatePoints
+                    ON Venda
+                    AFTER INSERT
+                    AS
+                    BEGIN
+                        UPDATE Cliente
+                        SET pontos = pontos + (INSERTED.valor / 10)
+                        FROM Cliente
+                        INNER JOIN INSERTED ON Cliente.id = INSERTED.id_cliente;
+                    END;";
+                    cmd.ExecuteNonQuery();
+                }
 
                 Console.WriteLine("Trigger de pontos criada com sucesso!");
             }
