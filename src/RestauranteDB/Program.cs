@@ -7,13 +7,16 @@ namespace RestauranteDB
     {
         static void Main(string[] args)
         {
-            RestauranteSystem sistema = new RestauranteSystem();
-            sistema.CriarBancoDeDados();
-            sistema.CriarTabelas();
-            sistema.InserirDadosIniciais();
-            sistema.CriarTriggers();  
-                                     
+            DatabaseSetup setup = new DatabaseSetup();
+            DataSeeder seeder = new DataSeeder();
+            TriggerManager triggers = new TriggerManager();
 
+            setup.CriarBancoDeDados();
+            setup.CriarTabelas();
+            seeder.InserirDadosIniciais();
+            triggers.CriarTriggers();
+
+            //sistema.DestruirBancoDeDados();
             Console.WriteLine("Sistema do Restaurante iniciado com sucesso!");
         }
     }
