@@ -25,11 +25,18 @@ namespace RestauranteDB.Database
             using (SqlConnection conn = db.GetConnection())
             {
                 conn.Open();
+
+                // Força a desconexão de todos os usuários
+                SqlCommand disconnectCmd = new SqlCommand("ALTER DATABASE RestauranteDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;", conn);
+                disconnectCmd.ExecuteNonQuery();
+
                 SqlCommand cmd = new SqlCommand("IF EXISTS (SELECT * FROM sys.databases WHERE name = 'RestauranteDB') DROP DATABASE RestauranteDB;", conn);
                 cmd.ExecuteNonQuery();
+
                 Console.WriteLine("Banco de dados 'RestauranteDB' destruído com sucesso!");
             }
         }
+
 
         // Metodo para criar as tabelas no banco de dados
         public void CriarTabelas()
@@ -64,8 +71,8 @@ namespace RestauranteDB.Database
             estado_origem NVARCHAR(50) NOT NULL
         );
 
-        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Ingrediente' AND xtype='U')
-        CREATE TABLE Ingrediente (
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Ingredientes' AND xtype='U')
+        CREATE TABLE Ingredientes (
             id INT PRIMARY KEY, 
             nome NVARCHAR(50) NOT NULL, 
             data_fabricacao DATE NOT NULL, 
@@ -79,7 +86,7 @@ namespace RestauranteDB.Database
             id_prato INT, 
             id_ingrediente INT, 
             FOREIGN KEY (id_prato) REFERENCES Prato(id), 
-            FOREIGN KEY (id_ingrediente) REFERENCES Ingrediente(id)
+            FOREIGN KEY (id_ingrediente) REFERENCES Ingredientes(id)
         );
 
         IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Venda' AND xtype='U')
