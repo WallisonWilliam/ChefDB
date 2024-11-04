@@ -12,7 +12,7 @@ namespace RestauranteDB
             DataSeeder seeder = new DataSeeder(dbConnection);
             TriggerManager triggers = new TriggerManager(dbConnection);
 
-            // setup.DestruirBancoDeDados();
+            //setup.DestruirBancoDeDados();
             setup.CriarBancoDeDados();
             setup.CriarTabelas();
             seeder.InserirDadosIniciais();

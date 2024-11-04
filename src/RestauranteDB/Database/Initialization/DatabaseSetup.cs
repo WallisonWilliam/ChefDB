@@ -12,7 +12,6 @@ namespace RestauranteDB.Database
             db = dbConnection;
         }
 
-        // Metodo para criar o banco de dados se nao existir
         public void CriarBancoDeDados()
         {
             using (SqlConnection conn = (SqlConnection)db.GetConnection())
@@ -27,14 +26,13 @@ namespace RestauranteDB.Database
             }
         }
 
-        // Metodo para destruir o banco de dados
         public void DestruirBancoDeDados()
         {
             using (SqlConnection conn = (SqlConnection)db.GetConnection())
             {
                 conn.Open();
 
-                // Força a desconexão de todos os usuários
+                // Força a desconexao de todos os usuarios
                 using (SqlCommand disconnectCmd = conn.CreateCommand())
                 {
                     disconnectCmd.CommandText = "ALTER DATABASE RestauranteDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;";
@@ -47,6 +45,7 @@ namespace RestauranteDB.Database
                     cmd.CommandText = "IF EXISTS (SELECT * FROM sys.databases WHERE name = 'RestauranteDB') DROP DATABASE RestauranteDB;";
                     cmd.ExecuteNonQuery();
                 }
+
 
                 Console.WriteLine("Banco de dados 'RestauranteDB' destruído com sucesso!");
             }
