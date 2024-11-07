@@ -11,12 +11,17 @@ namespace RestauranteDB
             DatabaseSetup setup = new DatabaseSetup(dbConnection);
             DataSeeder seeder = new DataSeeder(dbConnection);
             TriggerManager triggers = new TriggerManager(dbConnection);
+            UserPermissions users = new UserPermissions(dbConnection);
+            StoredProcedures procedures = new StoredProcedures(dbConnection); // Instancia a classe StoredProcedures
 
-            //setup.DestruirBancoDeDados();
-            setup.CriarBancoDeDados();
-            setup.CriarTabelas();
-            seeder.InserirDadosIniciais();
-            triggers.CriarTriggers();
+            //setup.RemoverLogins();             
+            //dsetup.DestruirBancoDeDados();       
+            setup.CriarBancoDeDados();          
+            setup.CriarTabelas();               
+            seeder.InserirDadosIniciais();      
+            setup.CriarViews();                 
+            triggers.CriarTriggers();          
+            users.SetupUsersAndPermissions();   
 
             Console.WriteLine("Sistema do Restaurante iniciado com sucesso!");
         }

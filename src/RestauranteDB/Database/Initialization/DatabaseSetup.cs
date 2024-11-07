@@ -32,13 +32,6 @@ namespace RestauranteDB.Database
             {
                 conn.Open();
 
-                // Força a desconexao de todos os usuarios
-                using (SqlCommand disconnectCmd = conn.CreateCommand())
-                {
-                    disconnectCmd.CommandText = "ALTER DATABASE RestauranteDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;";
-                    disconnectCmd.ExecuteNonQuery();
-                }
-
                 // Deleta o banco de dados se ele existir
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
@@ -46,10 +39,38 @@ namespace RestauranteDB.Database
                     cmd.ExecuteNonQuery();
                 }
 
-
                 Console.WriteLine("Banco de dados 'RestauranteDB' destruído com sucesso!");
             }
         }
+
+        public void RemoverLogins()
+        {
+            using (SqlConnection conn = db.GetConnection())
+            {
+                conn.Open();
+
+                // Comandos SQL para remover logins de servidor
+                string sqlCommands = @"
+                IF EXISTS (SELECT * FROM sys.server_principals WHERE name = 'Administrador')
+                    DROP LOGIN Administrador;
+
+                IF EXISTS (SELECT * FROM sys.server_principals WHERE name = 'Gerente')
+                    DROP LOGIN Gerente;
+
+                IF EXISTS (SELECT * FROM sys.server_principals WHERE name = 'Funcionario')
+                    DROP LOGIN Funcionario;
+                ";
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = sqlCommands;
+                    cmd.ExecuteNonQuery();
+                }
+
+                Console.WriteLine("Logins removidos com sucesso.");
+            }
+        }
+
 
         public void CriarTabelas()
         {
@@ -120,5 +141,80 @@ namespace RestauranteDB.Database
                 Console.WriteLine("Tabelas criadas com sucesso ou já existentes.");
             }
         }
+        public void CriarViews()
+        {
+            using (SqlConnection conn = db.GetDatabaseConnection())
+            {
+                conn.Open();
+
+                // View de Clientes e Pontuação Acumulada por Gastos
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "IF OBJECT_ID('ClientePontuacao', 'V') IS NOT NULL DROP VIEW ClientePontuacao;";
+                    cmd.ExecuteNonQuery();
+
+                    cmd.CommandText = @"
+                    CREATE VIEW ClientePontuacao AS
+                    SELECT 
+                        c.id AS ClienteID,
+                        c.nome AS NomeCliente,
+                        SUM(v.valor / 10) AS PontosAcumulados
+                    FROM 
+                        Cliente c
+                    JOIN 
+                        Venda v ON c.id = v.id_cliente
+                    GROUP BY 
+                        c.id, c.nome;";
+                    cmd.ExecuteNonQuery();
+                }
+
+                // View de Pratos Mais Vendidos (sem ORDER BY)
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "IF OBJECT_ID('PratosMaisVendidos', 'V') IS NOT NULL DROP VIEW PratosMaisVendidos;";
+                    cmd.ExecuteNonQuery();
+
+                    cmd.CommandText = @"
+                    CREATE VIEW PratosMaisVendidos AS
+                    SELECT 
+                        p.id AS PratoID,
+                        p.nome AS NomePrato,
+                        SUM(v.quantidade) AS TotalVendas
+                    FROM 
+                        Prato p
+                    JOIN 
+                        Venda v ON p.id = v.id_prato
+                    GROUP BY 
+                        p.id, p.nome;";
+                    cmd.ExecuteNonQuery();
+                }
+
+                // View de Ingredientes e Pratos Associados
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "IF OBJECT_ID('IngredientesPratos', 'V') IS NOT NULL DROP VIEW IngredientesPratos;";
+                    cmd.ExecuteNonQuery();
+
+                    cmd.CommandText = @"
+                    CREATE VIEW IngredientesPratos AS
+                    SELECT 
+                        i.id AS IngredienteID,
+                        i.nome AS NomeIngrediente,
+                        p.nome AS NomePrato
+                    FROM 
+                        Ingredientes i
+                    JOIN 
+                        Usos u ON i.id = u.id_ingrediente
+                    JOIN 
+                        Prato p ON u.id_prato = p.id
+                    GROUP BY 
+                        i.id, i.nome, p.nome;";
+                    cmd.ExecuteNonQuery();
+                }
+
+                Console.WriteLine("Views criadas com sucesso.");
+            }
+        }
     }
 }
+

@@ -17,7 +17,7 @@ namespace RestauranteDB.Database
             CriarTriggerPontos();
             CriarTriggerIngredientesVencidos();
             CriarTriggerCompraIndisponivel();
-            //CriarTriggerVendaProduto();
+            CriarTriggerVendaProduto();
         }
 
         // Trigger para pontos de cliente e recria se ja existir
@@ -138,6 +138,41 @@ namespace RestauranteDB.Database
                 }
 
                 Console.WriteLine("Trigger para impedir a compra de pratos indisponíveis criado com sucesso!");
+            }
+        }
+        public void CriarTriggerVendaProduto()
+        {
+            using (SqlConnection conn = db.GetDatabaseConnection())
+            {
+                conn.Open();
+
+                using (SqlCommand dropCmd = conn.CreateCommand())
+                {
+                    dropCmd.CommandText = @"IF OBJECT_ID('trg_ReduceIngredientQuantity', 'TR') IS NOT NULL 
+                                    DROP TRIGGER trg_ReduceIngredientQuantity;";
+                    dropCmd.ExecuteNonQuery();
+                }
+
+                // Trigger para reduzir a quantidade de ingredientes quando uma venda eh feita
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+            CREATE TRIGGER trg_ReduceIngredientQuantity
+            ON Venda
+            AFTER INSERT
+            AS
+            BEGIN
+                DECLARE @id_prato INT, @quantidade INT;
+                SELECT @id_prato = id_prato, @quantidade = quantidade FROM INSERTED;
+
+                UPDATE Ingredientes
+                SET quantidade = quantidade - @quantidade
+                WHERE id IN (SELECT id_ingrediente FROM Usos WHERE id_prato = @id_prato)
+            END;";
+                    cmd.ExecuteNonQuery();
+                }
+
+                Console.WriteLine("Trigger para reduzir a quantidade de ingredientes na venda criado com sucesso!");
             }
         }
     }

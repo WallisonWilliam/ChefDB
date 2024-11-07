@@ -39,7 +39,7 @@ namespace RestauranteDB.Database
 
         private void InserirClientes(SqlConnection conn)
         {
-            string[] nomesClientes = { "João Silva", "Maria Oliveira", "Pedro Souza", "Ana Lima", "Carlos Pereira", "Mariana Castro", "Lucas Mendes", "Fernanda Rocha", "Paulo Alves", "Júlia Costa" };
+            string[] nomesClientes = { "Joao Silva", "Maria Oliveira", "Pedro Souza", "Ana Lima", "Carlos Pereira", "Mariana Castro", "Lucas Mendes", "Fernanda Rocha", "Paulo Alves", "Julia Costa" };
             char[] sexoClientes = { 'm', 'f', 'm', 'f', 'm', 'f', 'm', 'f', 'm', 'f' };
 
             for (int i = 1; i <= 10; i++)
@@ -60,18 +60,18 @@ namespace RestauranteDB.Database
 
         private void InserirPratos(SqlConnection conn)
         {
-            string[] nomesPratos = { "Feijoada Completa", "Picanha Grelhada", "Moqueca de Peixe", "Hambúrguer Artesanal", "Pizza Marguerita", "Combinado Sushi", "Tacos Mexicanos", "Salada Caesar", "Lasanha Bolonhesa", "Espaguete ao Alho e Óleo" };
+            string[] nomesPratos = { "Feijoada Completa", "Picanha Grelhada", "Moqueca de Peixe", "Hamburguer Artesanal", "Pizza Marguerita", "Combinado Sushi", "Tacos Mexicanos", "Salada Caesar", "Lasanha Bolonhesa", "Espaguete ao Alho e Oleo" };
             string[] descricaoPratos = {
-                "Feijoada com carne seca, linguiça, costela e acompanhamentos.",
+                "Feijoada com carne seca, linguica, costela e acompanhamentos.",
                 "Picanha grelhada ao ponto, acompanhada de arroz e batatas fritas.",
-                "Moqueca de peixe com leite de coco, pimentões e dendê.",
-                "Hambúrguer artesanal com creme gorgonzola, geleia de pimenta, onion rings e bacon.",
-                "Pizza marguerita com molho de tomate, mussarela e manjericão fresco.",
-                "Combinado de sushi com 10 peças de sushi e 8 de sashimi.",
+                "Moqueca de peixe com leite de coco, pimentoes e dende.",
+                "Hamburguer artesanal com creme gorgonzola, geleia de pimenta, onion rings e bacon.",
+                "Pizza marguerita com molho de tomate, mussarela e manjericao fresco.",
+                "Combinado de sushi com 10 pecas de sushi e 8 de sashimi.",
                 "Tacos com recheio de carne, alface, queijo e molho picante.",
-                "Salada Caesar com frango grelhado, croutons e parmesão.",
-                "Lasanha à bolonhesa com camadas de carne, queijo e molho de tomate.",
-                "Espaguete ao alho e óleo com toque de pimenta e parmesão."
+                "Salada Caesar com frango grelhado, croutons e parmesao.",
+                "Lasanha a bolonhesa com camadas de carne, queijo e molho de tomate.",
+                "Espaguete ao alho e oleo com toque de pimenta e parmesao."
             };
             decimal[] valorPratos = { 35.0m, 60.0m, 50.0m, 25.0m, 28.0m, 45.0m, 22.0m, 18.0m, 32.0m, 20.0m };
 
@@ -96,7 +96,7 @@ namespace RestauranteDB.Database
 
         private void InserirFornecedores(SqlConnection conn)
         {
-            string[] nomesFornecedores = { "Apolinario Gourmet", "Jhey Natural", "Cavalcanti Carnes", "Apolinaria Alimentos", "JheyJhey Queijaria", "Jhey Bebidas", "Apolinário Orgânicos", "Cavalcanti Grãos", "Jhey Gelados", "Apolinario Especiarias" };
+            string[] nomesFornecedores = { "Apolinario Gourmet", "Jhey Natural", "Cavalcanti Carnes", "Apolinaria Alimentos", "JheyJhey Queijaria", "Jhey Bebidas", "Apolinario Organicos", "Cavalcanti Graos", "Jhey Gelados", "Apolinario Especiarias" };
             string[] estadosFornecedores = { "SP", "RJ", "BA", "SP", "MG", "SP", "CE", "PR", "SC", "RS" };
 
             for (int i = 1; i <= 10; i++)
@@ -114,34 +114,34 @@ namespace RestauranteDB.Database
 
         private void InserirIngredientes(SqlConnection conn)
         {
-            string[] nomesIngredientes = { "Carne Seca", "Linguiça", "Costela", "Arroz", "Batata", "Peixe", "Leite de Coco", "Pimentão", "Dendê", "Gorgonzola", "Pimenta", "Onion Rings", "Bacon", "Tomate", "Mussarela", "Manjericão", "Carne", "Alface", "Queijo", "Frango", "Croutons", "Parmesão", "Molho de Tomate", "Farinha de Trigo", "Alho", "Óleo", "Pimenta do Reino" };
+            string[] nomesIngredientes = { "Carne Seca", "Linguica", "Costela", "Arroz", "Batata", "Peixe", "Leite de Coco", "Pimentao", "Dende", "Gorgonzola", "Pimenta", "Onion Rings", "Bacon", "Tomate", "Mussarela", "Manjericao", "Carne", "Alface", "Queijo", "Frango", "Croutons", "Parmesao", "Molho de Tomate", "Farinha de Trigo", "Alho", "Oleo", "Pimenta do Reino" };
             string[] observacaoIngredientes = {
                 "Ideal para feijoada.",
-                "Linguiça para feijoada.",
+                "Linguica para feijoada.",
                 "Costela bovina para feijoada.",
                 "Arroz para acompanhar pratos.",
                 "Batata para acompanhamento.",
                 "Peixe fresco para moqueca.",
                 "Leite de coco para moqueca.",
-                "Pimentão para tempero.",
-                "Óleo de dendê.",
+                "Pimentao para tempero.",
+                "Oleo de dende.",
                 "Queijo gorgonzola.",
                 "Pimenta para geleia.",
-                "Onion rings para hambúrguer.",
+                "Onion rings para hamburguer.",
                 "Bacon crocante.",
                 "Tomate fresco para pizza.",
                 "Mussarela para pizza.",
-                "Manjericão fresco.",
-                "Carne moída para tacos.",
+                "Manjericao fresco.",
+                "Carne moida para tacos.",
                 "Alface fresca.",
                 "Queijo ralado.",
                 "Frango grelhado para salada.",
                 "Croutons crocantes.",
-                "Parmesão ralado.",
+                "Parmesao ralado.",
                 "Molho de tomate para lasanha.",
                 "Farinha de trigo para massas.",
                 "Alho para espaguete.",
-                "Óleo para fritura.",
+                "Oleo para fritura.",
                 "Pimenta do reino para tempero."
             };
 
@@ -165,16 +165,16 @@ namespace RestauranteDB.Database
         {
             int[][] pratoIngredientes = new int[][]
             {
-                new int[] { 1, 2, 3, 4 },             // Feijoada Completa: Carne Seca, Linguiça, Costela, Arroz
+                new int[] { 1, 2, 3, 4 },             // Feijoada Completa: Carne Seca, Linguica, Costela, Arroz
                 new int[] { 4, 5 },                   // Picanha Grelhada: Arroz, Batata
-                new int[] { 6, 7, 8, 9 },             // Moqueca de Peixe: Peixe, Leite de Coco, Pimentão, Dendê
-                new int[] { 10, 11, 12, 13 },         // Hambúrguer Artesanal: Gorgonzola, Pimenta, Onion Rings, Bacon
-                new int[] { 14, 15, 16 },             // Pizza Marguerita: Tomate, Mussarela, Manjericão
+                new int[] { 6, 7, 8, 9 },             // Moqueca de Peixe: Peixe, Leite de Coco, Pimentao, Dende
+                new int[] { 10, 11, 12, 13 },         // Hamburguer Artesanal: Gorgonzola, Pimenta, Onion Rings, Bacon
+                new int[] { 14, 15, 16 },             // Pizza Marguerita: Tomate, Mussarela, Manjericao
                 new int[] { 17, 18, 19 },             // Combinado Sushi: Carne, Alface, Queijo
                 new int[] { 17, 18, 19 },             // Tacos Mexicanos: Carne, Alface, Queijo
-                new int[] { 20, 21, 22 },             // Salada Caesar: Frango, Croutons, Parmesão
+                new int[] { 20, 21, 22 },             // Salada Caesar: Frango, Croutons, Parmesao
                 new int[] { 23, 24, 15 },             // Lasanha Bolonhesa: Molho de Tomate, Farinha de Trigo, Mussarela
-                new int[] { 4, 25, 26, 27 }           // Espaguete ao Alho e Óleo: Arroz, Alho, Óleo, Pimenta do Reino
+                new int[] { 4, 25, 26, 27 }           // Espaguete ao Alho e Oleo: Arroz, Alho, Oleo, Pimenta do Reino
             };
 
             for (int pratoId = 1; pratoId <= 10; pratoId++)
