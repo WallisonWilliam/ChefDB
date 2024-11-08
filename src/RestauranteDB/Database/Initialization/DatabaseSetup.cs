@@ -32,7 +32,15 @@ namespace RestauranteDB.Database
             {
                 conn.Open();
 
-                // Deleta o banco de dados se ele existir
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    ALTER DATABASE RestauranteDB 
+                    SET SINGLE_USER 
+                    WITH ROLLBACK IMMEDIATE;";
+                    cmd.ExecuteNonQuery();
+                }
+
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = "IF EXISTS (SELECT * FROM sys.databases WHERE name = 'RestauranteDB') DROP DATABASE RestauranteDB;";
@@ -43,13 +51,13 @@ namespace RestauranteDB.Database
             }
         }
 
+
         public void RemoverLogins()
         {
             using (SqlConnection conn = db.GetConnection())
             {
                 conn.Open();
 
-                // Comandos SQL para remover logins de servidor
                 string sqlCommands = @"
                 IF EXISTS (SELECT * FROM sys.server_principals WHERE name = 'Administrador')
                     DROP LOGIN Administrador;
@@ -168,7 +176,7 @@ namespace RestauranteDB.Database
                     cmd.ExecuteNonQuery();
                 }
 
-                // View de Pratos Mais Vendidos (sem ORDER BY)
+                // View de Pratos Mais Vendidos
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = "IF OBJECT_ID('PratosMaisVendidos', 'V') IS NOT NULL DROP VIEW PratosMaisVendidos;";

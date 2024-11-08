@@ -27,7 +27,6 @@ namespace RestauranteDB.Database
             {
                 conn.Open();
 
-                // Exclui o trigger se ele ja existir
                 using (SqlCommand dropCmd = conn.CreateCommand())
                 {
                     dropCmd.CommandText = @"IF OBJECT_ID('trg_CalculatePoints', 'TR') IS NOT NULL DROP TRIGGER trg_CalculatePoints;";
@@ -61,7 +60,6 @@ namespace RestauranteDB.Database
             {
                 conn.Open();
 
-                // Exclui o trigger se ele ja existir
                 using (SqlCommand dropCmd = conn.CreateCommand())
                 {
                     dropCmd.CommandText = @"IF OBJECT_ID('trg_IngredientExpiration', 'TR') IS NOT NULL 
@@ -99,7 +97,6 @@ namespace RestauranteDB.Database
             {
                 conn.Open();
 
-                // Exclui o trigger se ele ja existir
                 using (SqlCommand dropCmd = conn.CreateCommand())
                 {
                     dropCmd.CommandText = @"IF OBJECT_ID('trg_BlockUnavailablePurchase', 'TR') IS NOT NULL 
@@ -111,29 +108,29 @@ namespace RestauranteDB.Database
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                CREATE TRIGGER trg_BlockUnavailablePurchase
-                ON Venda
-                INSTEAD OF INSERT
-                AS
-                BEGIN
-                    DECLARE @id_prato INT;
-                    DECLARE @disponibilidade BIT;
-
-                    SELECT @id_prato = id_prato FROM INSERTED;
-
-                    SELECT @disponibilidade = disponibilidade FROM Prato WHERE id = @id_prato;
-
-                    IF @disponibilidade = 1
+                    CREATE TRIGGER trg_BlockUnavailablePurchase
+                    ON Venda
+                    INSTEAD OF INSERT
+                    AS
                     BEGIN
-                        INSERT INTO Venda (id, id_cliente, id_prato, quantidade, dia, hora, valor)
-                        SELECT id, id_cliente, id_prato, quantidade, dia, hora, valor
-                        FROM INSERTED;
-                    END
-                    ELSE
-                    BEGIN
-                        RAISERROR ('Não é possível realizar a compra. O prato selecionado está indisponível.', 16, 1);
-                    END
-                END;";
+                        DECLARE @id_prato INT;
+                        DECLARE @disponibilidade BIT;
+
+                        SELECT @id_prato = id_prato FROM INSERTED;
+
+                        SELECT @disponibilidade = disponibilidade FROM Prato WHERE id = @id_prato;
+
+                        IF @disponibilidade = 1
+                        BEGIN
+                            INSERT INTO Venda (id, id_cliente, id_prato, quantidade, dia, hora, valor)
+                            SELECT id, id_cliente, id_prato, quantidade, dia, hora, valor
+                            FROM INSERTED;
+                        END
+                        ELSE
+                        BEGIN
+                            RAISERROR ('Não é possível realizar a compra. O prato selecionado está indisponível.', 16, 1);
+                        END
+                    END;";
                     cmd.ExecuteNonQuery();
                 }
 
@@ -157,18 +154,18 @@ namespace RestauranteDB.Database
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-            CREATE TRIGGER trg_ReduceIngredientQuantity
-            ON Venda
-            AFTER INSERT
-            AS
-            BEGIN
-                DECLARE @id_prato INT, @quantidade INT;
-                SELECT @id_prato = id_prato, @quantidade = quantidade FROM INSERTED;
+                    CREATE TRIGGER trg_ReduceIngredientQuantity
+                    ON Venda
+                    AFTER INSERT
+                    AS
+                    BEGIN
+                        DECLARE @id_prato INT, @quantidade INT;
+                        SELECT @id_prato = id_prato, @quantidade = quantidade FROM INSERTED;
 
-                UPDATE Ingredientes
-                SET quantidade = quantidade - @quantidade
-                WHERE id IN (SELECT id_ingrediente FROM Usos WHERE id_prato = @id_prato)
-            END;";
+                        UPDATE Ingredientes
+                        SET quantidade = quantidade - @quantidade
+                        WHERE id IN (SELECT id_ingrediente FROM Usos WHERE id_prato = @id_prato)
+                    END;";
                     cmd.ExecuteNonQuery();
                 }
 
